@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "arctopstatsaio"
+version = "0.1.0"
+description = "All in one solution for ArcDPS top stats parser"
+authors = ["darkharasho <144265798+darkharasho@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Everything-Tkinter = "^0.2"
+sv-ttk = "^2.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
