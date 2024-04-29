@@ -7,6 +7,7 @@ Source: https://github.com/rdbende/ttk-widget-factory
 import pdb
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import sv_ttk
 import os
 from datetime import datetime
@@ -20,6 +21,7 @@ def get_files(directory):
             subdir = os.path.relpath(root, directory)  # Gets the subdirectory path
             mod_time = os.path.getmtime(path)
             yield subdir, file, datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M:%S')
+
 
 
 DEFAULT_DIR = "C:\\Users\\proje\\OneDrive\\Documents\\Guild Wars 2\\addons\\arcdps\\arcdps.cbtlogs\\1"  # Change this to your directory
@@ -51,10 +53,32 @@ class App(ttk.Frame):
         # Create widgets :)
         self.setup_widgets()
 
+        # Bind the callback to the directory variable
+        self.directory.trace('w', self.update_treeview)
+
+    def browse_directory(self):
+        # Open the file dialog to choose directory
+        directory = filedialog.askdirectory()
+        # Update the entry with the selected directory
+        if directory:  # If a directory was selected
+            self.directory.set(directory)
+            self.entry.delete(0, tk.END)
+            self.entry.insert(0, directory)
+
+    def update_treeview(self, *args):
+        # Clear the existing treeview entries
+        for i in self.treeview.get_children():
+            self.treeview.delete(i)
+
+        # Inserting the data into the TreeView
+        for subdir, file, modified in get_files(self.directory.get()):
+            oid = self.treeview.insert('', tk.END, values=('', subdir, file, modified))
+            # checkbox_states[oid] = False  # Initialize all checkboxes as unchecked
+
     def setup_widgets(self):
         # self.grid_columnconfigure(0, weight=1)
         # Create a Frame for input widgets
-        self.widgets_frame = ttk.LabelFrame(self, text="ArcDPS Log Directory", padding=(10, 10))
+        self.widgets_frame = ttk.LabelFrame(self, text="📁 ArcDPS Log Directory", padding=(10, 10))
         self.widgets_frame.grid(
             row=0, column=0, padx=10, pady=(10, 10), sticky="ew", rowspan=1, columnspan=3
         )
@@ -62,8 +86,13 @@ class App(ttk.Frame):
 
         # Entry
         self.entry = ttk.Entry(self.widgets_frame, textvariable=self.directory)
-        self.entry.insert(0, self.directory.get())
+        self.entry.insert(0, '')
         self.entry.grid(row=0, column=0, padx=10, pady=(0, 8), sticky="ew")
+
+        # Browse Button
+        self.browse_button = ttk.Button(self.widgets_frame, text="Browse", command=self.browse_directory)
+        self.browse_button.grid(row=0, column=1, padx=(0, 10), pady=(0, 8), sticky="ew")
+
 
         # Create a Frame for the Checkbuttons
         self.check_frame = ttk.LabelFrame(self, text="Checkbuttons", padding=(20, 10))
@@ -196,7 +225,7 @@ class App(ttk.Frame):
 
         # Treeview
         self.treeview = ttk.Treeview(self.pane_1, columns=("include", "subdir", "file", "modified"),
-                            show="headings",  # Hide the tree column
+                            show="headings",
                             selectmode="extended",  # Enable multiple selection
                             yscrollcommand=self.scrollbar.set)
         self.treeview.pack(fill=tk.BOTH, expand=True)
@@ -238,7 +267,7 @@ class App(ttk.Frame):
         self.treeview.bind('<ButtonRelease-1>', toggle_include)  # Use ButtonRelease for more accurate detection
 
         # Inserting the data into the TreeView
-        for subdir, file, modified in get_files(DEFAULT_DIR):
+        for subdir, file, modified in get_files(self.directory.get()):
             oid = self.treeview.insert('', tk.END, values=('', subdir, file, modified))
             checkbox_states[oid] = False  # Initialize all checkboxes as unchecked
 
