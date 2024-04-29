@@ -4,7 +4,7 @@ Author: rdbende
 License: MIT license
 Source: https://github.com/rdbende/ttk-widget-factory
 """
-
+import pdb
 import tkinter as tk
 from tkinter import ttk
 import sv_ttk
@@ -20,6 +20,9 @@ def get_files(directory):
             subdir = os.path.relpath(root, directory)  # Gets the subdirectory path
             mod_time = os.path.getmtime(path)
             yield subdir, file, datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M:%S')
+
+
+DEFAULT_DIR = "C:\\Users\\proje\\OneDrive\\Documents\\Guild Wars 2\\addons\\arcdps\\arcdps.cbtlogs\\1"  # Change this to your directory
 
 
 class App(ttk.Frame):
@@ -43,15 +46,29 @@ class App(ttk.Frame):
         self.var_3 = tk.IntVar(value=2)
         self.var_4 = tk.StringVar(value=self.option_menu_list[1])
         self.var_5 = tk.DoubleVar(value=75.0)
+        self.directory = tk.StringVar(value=DEFAULT_DIR)
 
         # Create widgets :)
         self.setup_widgets()
 
     def setup_widgets(self):
+        # self.grid_columnconfigure(0, weight=1)
+        # Create a Frame for input widgets
+        self.widgets_frame = ttk.LabelFrame(self, text="ArcDPS Log Directory", padding=(10, 10))
+        self.widgets_frame.grid(
+            row=0, column=0, padx=10, pady=(10, 10), sticky="ew", rowspan=1, columnspan=3
+        )
+        self.widgets_frame.columnconfigure(index=0, weight=1)
+
+        # Entry
+        self.entry = ttk.Entry(self.widgets_frame, textvariable=self.directory)
+        self.entry.insert(0, self.directory.get())
+        self.entry.grid(row=0, column=0, padx=10, pady=(0, 8), sticky="ew")
+
         # Create a Frame for the Checkbuttons
         self.check_frame = ttk.LabelFrame(self, text="Checkbuttons", padding=(20, 10))
         self.check_frame.grid(
-            row=0, column=0, padx=(20, 10), pady=(20, 10), sticky="nsew"
+            row=1, column=0, padx=(20, 10), pady=(20, 10), sticky="nsew"
         )
 
         # Checkbuttons
@@ -99,31 +116,26 @@ class App(ttk.Frame):
         )
         self.radio_4.grid(row=3, column=0, padx=5, pady=10, sticky="nsew")
 
-        # Create a Frame for input widgets
-        self.widgets_frame = ttk.Frame(self, padding=(0, 0, 0, 10))
-        self.widgets_frame.grid(
-            row=0, column=1, padx=10, pady=(30, 10), sticky="nsew", rowspan=3
+        # Rest of inputs
+        self.widgets_frame2 = ttk.Frame(self, padding=(0, 0, 0, 10))
+        self.widgets_frame2.grid(
+            row=1, column=1, padx=10, pady=(30, 10), sticky="nsew", rowspan=3
         )
         self.widgets_frame.columnconfigure(index=0, weight=1)
 
-        # Entry
-        self.entry = ttk.Entry(self.widgets_frame)
-        self.entry.insert(0, "Entry")
-        self.entry.grid(row=0, column=0, padx=5, pady=(0, 10), sticky="ew")
-
         # Spinbox
-        self.spinbox = ttk.Spinbox(self.widgets_frame, from_=0, to=100, increment=0.1)
+        self.spinbox = ttk.Spinbox(self.widgets_frame2, from_=0, to=100, increment=0.1)
         self.spinbox.insert(0, "Spinbox")
         self.spinbox.grid(row=1, column=0, padx=5, pady=10, sticky="ew")
 
         # Combobox
-        self.combobox = ttk.Combobox(self.widgets_frame, values=self.combo_list)
+        self.combobox = ttk.Combobox(self.widgets_frame2, values=self.combo_list)
         self.combobox.current(0)
         self.combobox.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
 
         # Read-only combobox
         self.readonly_combo = ttk.Combobox(
-            self.widgets_frame, state="readonly", values=self.readonly_combo_list
+            self.widgets_frame2, state="readonly", values=self.readonly_combo_list
         )
         self.readonly_combo.current(0)
         self.readonly_combo.grid(row=3, column=0, padx=5, pady=10, sticky="ew")
@@ -138,41 +150,41 @@ class App(ttk.Frame):
 
         # Menubutton
         self.menubutton = ttk.Menubutton(
-            self.widgets_frame, text="Menubutton", menu=self.menu, direction="below"
+            self.widgets_frame2, text="Menubutton", menu=self.menu, direction="below"
         )
         self.menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
 
         # OptionMenu
         self.optionmenu = ttk.OptionMenu(
-            self.widgets_frame, self.var_4, *self.option_menu_list
+            self.widgets_frame2, self.var_4, *self.option_menu_list
         )
         self.optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
 
         # Button
-        self.button = ttk.Button(self.widgets_frame, text="Button")
+        self.button = ttk.Button(self.widgets_frame2, text="Button")
         self.button.grid(row=6, column=0, padx=5, pady=10, sticky="nsew")
 
         # Accentbutton
         self.accentbutton = ttk.Button(
-            self.widgets_frame, text="Accent button", style="Accent.TButton"
+            self.widgets_frame2, text="Accent button", style="Accent.TButton"
         )
         self.accentbutton.grid(row=7, column=0, padx=5, pady=10, sticky="nsew")
 
         # Togglebutton
         self.togglebutton = ttk.Checkbutton(
-            self.widgets_frame, text="Toggle button", style="Toggle.TButton"
+            self.widgets_frame2, text="Toggle button", style="Toggle.TButton"
         )
         self.togglebutton.grid(row=8, column=0, padx=5, pady=10, sticky="nsew")
 
         # Switch
         self.switch = ttk.Checkbutton(
-            self.widgets_frame, text="Switch", style="Switch.TCheckbutton"
+            self.widgets_frame2, text="Switch", style="Switch.TCheckbutton"
         )
         self.switch.grid(row=9, column=0, padx=5, pady=10, sticky="nsew")
 
         # Panedwindow
         self.paned = ttk.PanedWindow(self)
-        self.paned.grid(row=0, column=2, pady=(25, 5), sticky="nsew", rowspan=3)
+        self.paned.grid(row=1, column=2, pady=(25, 5), sticky="nsew", rowspan=3)
 
         # Pane #1
         self.pane_1 = ttk.Frame(self.paned, padding=5)
@@ -188,13 +200,6 @@ class App(ttk.Frame):
                             selectmode="extended",  # Enable multiple selection
                             yscrollcommand=self.scrollbar.set)
         self.treeview.pack(fill=tk.BOTH, expand=True)
-        # self.treeview = ttk.Treeview(
-        #     self.pane_1,
-        #     selectmode="browse",
-        #     yscrollcommand=self.scrollbar.set,
-        #     columns=(1, 2),
-        #     height=10,
-        # )
         self.treeview.pack(expand=True, fill="both")
         self.scrollbar.config(command=self.treeview.yview)
 
@@ -233,8 +238,7 @@ class App(ttk.Frame):
         self.treeview.bind('<ButtonRelease-1>', toggle_include)  # Use ButtonRelease for more accurate detection
 
         # Inserting the data into the TreeView
-        directory = "C:\\Users\\proje\\OneDrive\\Documents\\Guild Wars 2\\addons\\arcdps\\arcdps.cbtlogs\\1"  # Change this to your directory
-        for subdir, file, modified in get_files(directory):
+        for subdir, file, modified in get_files(DEFAULT_DIR):
             oid = self.treeview.insert('', tk.END, values=('', subdir, file, modified))
             checkbox_states[oid] = False  # Initialize all checkboxes as unchecked
 
@@ -272,7 +276,7 @@ class App(ttk.Frame):
         # Label
         self.label = ttk.Label(
             self.tab_1,
-            text="Azure theme for ttk",
+            text="ArcDPS Top Stats AIO",
             justify="center",
             font=("-size", 15, "-weight", "bold"),
         )
@@ -294,6 +298,8 @@ class App(ttk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Arc Top Stats AIO")
+
+    root.geometry("1150x750")
 
     # Simply set the theme
     sv_ttk.set_theme("dark")
